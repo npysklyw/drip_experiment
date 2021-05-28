@@ -10,7 +10,7 @@ set Dimension                              = 2
 # also designate an output directory.
 set Use years in output instead of seconds = true
 set End time                               = 30e6 #Time steps
-set Output directory                       = output-2d-drip-experiment-multi-field #Edit this directory so we can test out various different things
+set Output directory                       = /mnt/c/Users/Nick/Documents/Aspect_Outputs_Drip/output-2d-drip-experiment-combo #Edit this directory so we can test out various different things
 set CFL number = 0.5
 
 # Then there are variables that describe how the pressure should
@@ -36,13 +36,13 @@ subsection Geometry model
     set X repetitions = 4
     set Y repetitions = 4
     set X extent = 1200e3
-    set Y extent = 600e3
+    set Y extent = 1167e3
   end
 end
 
 subsection Compositional fields
-  set Number of fields = 5
-  set Names of fields = upper, lower,lithosphere, astheno, seed
+  set Number of fields = 3
+  set Names of fields = uppercrust, lithosphere, astheno
 end
 
 # The next section deals with the initial conditions for the
@@ -87,7 +87,7 @@ subsection Initial temperature model
   set Model name = function
   subsection Function
     set Variable names = x, y
-    set Function constants = h=600e3,ts1=273,ts2=681.5714,ts3=823.,ts4=1573., \
+    set Function constants = h=1167e3,ts1=273,ts2=681.5714,ts3=823.,ts4=1573., \
                                      k1=2.5,k2=2.5,k3=3.3,k4=39.25,A=1.5e-6, \
                              qs1=0.0653571,qs2=0.035357,qs3=0.0275,qb3=0.01265823
 
@@ -170,10 +170,10 @@ subsection Material model
 
     # Thermal diffusivity is adjusted to match thermal conductivities
     # assumed in assigning the initial geotherm
-    set Thermal diffusivities = 1.190476e-6,1.190476e-6, 1.149425e-6, 1.333333e-6, 1.333333e-6, 1.333333e-6
-    set Heat capacities       =        750.,750., 750.,        750.,         750., 750.
-    set Densities             =        2800, 2800,        2900,        3300,         3300, 3900
-    set Thermal expansivities =        2e-5, 2e-5, 2e-5,        2e-5,         2e-5, 2e-5
+    set Thermal diffusivities = 1.149425e-6, 1.149425e-6, 1.333333e-6, 1.333333e-6
+    set Heat capacities       =        750., 750.,        750.,         750.
+    set Densities             =        3333,        3333,        3394,         3100
+    set Thermal expansivities =        2e-5, 2e-5,        2e-5,         2e-5
 
     # Harmonic viscosity averaging
     set Viscosity averaging scheme = harmonic
@@ -196,14 +196,14 @@ subsection Material model
     #    "Influence of water fugacity and activation volume on the flow properties of fine-grained    
     #    anorthite aggregates"
     # Note that the viscous pre-factors below are scaled to plane strain from unixial strain experiments.
-    set Prefactors for dislocation creep          = 8.57e-28,8.57e-28, 7.13e-18, 6.52e-16, 6.52e-16, 6.52e-16
-    set Stress exponents for dislocation creep    =      4.0,4.0,      3.0,      3.5, 3.5, 3.5
-    set Activation energies for dislocation creep =   223.e3,223.e3,   345.e3,   530.e3, 530.e3, 530.e3
-    set Activation volumes for dislocation creep  =  0., 0.,       0.,   18.e-6, 18.e-6,  18.e-6
+    set Prefactors for dislocation creep          = 7.13e-18, 7.13e-18, 6.52e-16, 6.52e-16
+    set Stress exponents for dislocation creep    =      3.0,      3.0,      3.5, 3.5
+    set Activation energies for dislocation creep =   345.e3,   345.e3,   530.e3, 530.e3
+    set Activation volumes for dislocation creep  =  0.,       0.,   18.e-6, 18.e-6
 
     # Plasticity parameters - weakness of mantle suture is given by lowering angle of internal friction
-    set Angles of internal friction =   20.,    20.,20.,    20., 20., 20.
-    set Cohesions                   = 20.e6, 20.e6,20.e6, 20.e6, 20.e6, 20.e6
+    set Angles of internal friction =   20.,20.,    20., 20.
+    set Cohesions                   = 20.e6,20.e6, 20.e6, 20.e6
     set Cohesion strain weakening factors = 0.5
     set Friction strain weakening factors = 0.5
 
@@ -216,7 +216,7 @@ subsection Initial composition model
   subsection Function
     set Variable names      = x,z
 
-    set Function expression =  if(z>=580.e3, 1, 0); if(z<580.e3 && z>=570.e3, 1, 0);if(z<570.e3 && z>=480.e3,1, 0); if(z>=0 && z <480e3, 1, 0); if (z>400e3 && z <= 470e3,if(x>500e3 && x < 600e3,1,0),0)
+    set Function expression =  if(z<1167.e3 && z>=1155.e3, 1, 0);if(z<1155.e3 && z>=1035.e3,1, 0) || if(z>930e3 && z <= 1030e3,if(x>500e3 && x < 600e3,1,0),0); if(z>=0 && z <1035.e3, 1, 0)
 
 end
 end
@@ -269,4 +269,5 @@ end
 subsection Solver parameters
   set Temperature solver tolerance = 1e-10
 end
+
 
