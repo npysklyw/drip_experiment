@@ -10,7 +10,7 @@ set Dimension                              = 2
 # also designate an output directory.
 set Use years in output instead of seconds = true
 set End time                               = 30e6 #Time steps
-set Output directory                       = /mnt/c/Users/Nick/Documents/Aspect_Outputs_Drip/output-2d-drip-experiment-combo #Edit this directory so we can test out various different things
+set Output directory                       = /home/npysklyw/scratch/Aspect_Code/output-2d-drip-experiment-simplermat #Edit this directory so we can test out various different things
 set CFL number = 0.5
 
 # Then there are variables that describe how the pressure should
@@ -74,30 +74,30 @@ end
 # parts of the boundary are insulated (i.e., no heat flux through
 # these boundaries; this is also often used to specify symmetry
 # boundaries).
-subsection Boundary temperature model
-  set Fixed temperature boundary indicators   = bottom, top
-  set List of model names = box
-  subsection Box
-    set Bottom temperature = 1727.8
-    set Top temperature    =  273
-  end
-end
+# subsection Boundary temperature model
+#   set Fixed temperature boundary indicators   = bottom, top
+#   set List of model names = box
+#   subsection Box
+#     set Bottom temperature = 1727.8
+#     set Top temperature    =  273
+#   end
+# end
 
-subsection Initial temperature model
-  set Model name = function
-  subsection Function
-    set Variable names = x, y
-    set Function constants = h=1167e3,ts1=273,ts2=681.5714,ts3=823.,ts4=1573., \
-                                     k1=2.5,k2=2.5,k3=3.3,k4=39.25,A=1.5e-6, \
-                             qs1=0.0653571,qs2=0.035357,qs3=0.0275,qb3=0.01265823
+# subsection Initial temperature model
+#   set Model name = function
+#   subsection Function
+#     set Variable names = x, y
+#     set Function constants = h=1167e3,ts1=273,ts2=681.5714,ts3=823.,ts4=1573., \
+#                                      k1=2.5,k2=2.5,k3=3.3,k4=39.25,A=1.5e-6, \
+#                              qs1=0.0653571,qs2=0.035357,qs3=0.0275,qb3=0.01265823
 
-    set Function expression = if( (h-y)<=20.e3, \
-                                  373, \
-                                  if((h-y)>20.e3 && (h-y)<=30.e3, 573,\
-                if((h-y)>30.e3 && (h-y)<=120.e3, 873, \
-                        1623)));                              
-  end
-end
+#     set Function expression = if( (h-y)<=20.e3, \
+#                                   373, \
+#                                   if((h-y)>20.e3 && (h-y)<=30.e3, 573,\
+#                 if((h-y)>30.e3 && (h-y)<=120.e3, 873, \
+#                         1623)));                              
+#   end
+# end
 
 
 # The next parameters then describe on which parts of the
@@ -149,63 +149,13 @@ end
 # crust (wet anorthite) and mantle (dry olivine).  
 
 subsection Material model
-  set Model name = visco plastic
+  set Model name = multicomponent
 
-  subsection Visco Plastic
-
-    # Reference temperature and viscosity
-    set Reference temperature = 293
-    set Reference viscosity = 1e22
-    
-    # The minimum strain-rate helps limit large viscosities values that arise
-    # as the strain-rate approaches zero.
-    # The reference strain-rate is used on the first non-linear iteration
-    # of the first time step when the velocity has not been determined yet. 
-    set Minimum strain rate = 1.e-20
-    set Reference strain rate = 1.e-16
-
-    # Limit the viscosity with minimum and maximum values
-    set Minimum viscosity = 1e18
-    set Maximum viscosity = 1e26
-
-    # Thermal diffusivity is adjusted to match thermal conductivities
-    # assumed in assigning the initial geotherm
-    set Thermal diffusivities = 1.149425e-6, 1.149425e-6, 1.333333e-6, 1.333333e-6
-    set Heat capacities       =        750., 750.,        750.,         750.
-    set Densities             =        3333,        3333,        3394,         3100
+  subsection Multicomponent
+    set Densities             =        3333,        3333,        3200,         3100
     set Thermal expansivities =        2e-5, 2e-5,        2e-5,         2e-5
 
-    # Harmonic viscosity averaging
-    set Viscosity averaging scheme = harmonic
-
-    # Choose to have the viscosity (pre-yield) follow a dislocation
-    # diffusion or composite flow law.  Here, dislocation is selected
-    # so no need to specify diffusion creep parameters below, which are
-    # only used if "diffusion" or "composite" option is selected.
-    set Viscous flow law = dislocation
-
-    # Dislocation creep parameters for 
-    # 1. Background material/mantle (dry olivine)
-    #    Hirth & Kohlstedt (2004),  Geophys. Monogr. Am. Geophys. Soc., v.138, p.83-105.
-    #    "Rheology of the upper mantle and the mantle wedge:a view from the experimentalists"
-    # 2. Upper crust (wet quartzite)
-    #    Rutter & Brodie (2004), J. Struct. Geol., v.26, p.2011-2023.
-    #    "Experimental grain size-sensitive flow of hot-pressed Brazilian quartz aggregates"
-    # 3. Lower crust and weak seed (wet anorthite)
-    #    Rybacki et al. (2006), J. Geophys. Res., v.111(B3).
-    #    "Influence of water fugacity and activation volume on the flow properties of fine-grained    
-    #    anorthite aggregates"
-    # Note that the viscous pre-factors below are scaled to plane strain from unixial strain experiments.
-    set Prefactors for dislocation creep          = 7.13e-18, 7.13e-18, 6.52e-16, 6.52e-16
-    set Stress exponents for dislocation creep    =      3.0,      3.0,      3.5, 3.5
-    set Activation energies for dislocation creep =   345.e3,   345.e3,   530.e3, 530.e3
-    set Activation volumes for dislocation creep  =  0.,       0.,   18.e-6, 18.e-6
-
-    # Plasticity parameters - weakness of mantle suture is given by lowering angle of internal friction
-    set Angles of internal friction =   20.,20.,    20., 20.
-    set Cohesions                   = 20.e6,20.e6, 20.e6, 20.e6
-    set Cohesion strain weakening factors = 0.5
-    set Friction strain weakening factors = 0.5
+    set Viscosities = 1e21,1e21,1.59e21,1e21
 
 
   end
@@ -216,7 +166,7 @@ subsection Initial composition model
   subsection Function
     set Variable names      = x,z
 
-    set Function expression =  if(z<1167.e3 && z>=1155.e3, 1, 0);if(z<1155.e3 && z>=1035.e3,1, 0) || if(z>930e3 && z <= 1030e3,if(x>500e3 && x < 600e3,1,0),0); if(z>=0 && z <1035.e3, 1, 0)
+    set Function expression =  if(z<1167.e3 && z>=1155.e3, 1, 0);if(z<1155.e3 && z>=1035.e3,1, 0) || if(z>950e3 && z <= 1050e3,if(x>500e3 && x < 600e3,1,0),0); if(z>=0 && z <1035.e3, 1, 0)
 
 end
 end
@@ -259,7 +209,7 @@ end
 # our start time (zero) and final time (0.5) this means that
 # we will obtain 50 output files.
 subsection Postprocess
-  set List of postprocessors = velocity statistics, temperature statistics, heat flux statistics, visualization
+  set List of postprocessors = velocity statistics, heat flux statistics, visualization
 
   subsection Visualization
     set Time between graphical output = 0.01
