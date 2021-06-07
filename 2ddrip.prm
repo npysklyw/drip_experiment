@@ -1,16 +1,14 @@
-# A description of convection in a 2d box. See the manual for more information.
-
 
 # At the top, we define the number of space dimensions we would like to
 # work in:
-set Dimension                              = 2
+set Dimension                              = 3
 
 # There are several global variables that have to do with what
 # time system we want to work in and what the end time is. We
 # also designate an output directory.
 set Use years in output instead of seconds = true
-set End time                               = 30e6 #Time steps
-set Output directory                       = /home/npysklyw/scratch/Aspect_Code/output-2d-drip-experiment-simplermat #Edit this directory so we can test out various different things
+set End time                               = 1e6 #Time steps
+set Output directory                       = /home/npysklyw/scratch/Aspect_Code/output-3d-drip-experiment-unconnected #Edit this directory so we can test out various different things
 set CFL number = 0.5
 
 # Then there are variables that describe how the pressure should
@@ -35,14 +33,16 @@ subsection Geometry model
   subsection Box
     set X repetitions = 4
     set Y repetitions = 4
+    set Z repetitions = 4
     set X extent = 1200e3
-    set Y extent = 1167e3
+    set Y extent = 1200e3
+    set Z extent = 1167e3
   end
 end
 
 subsection Compositional fields
-  set Number of fields = 3
-  set Names of fields = uppercrust, lithosphere, astheno
+  set Number of fields = 4
+  set Names of fields = uppercrust, mantlelithosphere, mantle, seed
 end
 
 # The next section deals with the initial conditions for the
@@ -106,7 +106,7 @@ end
 # Here, all four sides of the box allow tangential
 # unrestricted flow but with a zero normal component:
 subsection Boundary velocity model
-  set Tangential velocity boundary indicators = left, right, bottom, top
+  set Tangential velocity boundary indicators = left, right, top, bottom
 end
 
 # The following two sections describe first the
@@ -152,10 +152,9 @@ subsection Material model
   set Model name = multicomponent
 
   subsection Multicomponent
-    set Densities             =        3333,        3333,        3200,         3100
-    set Thermal expansivities =        2e-5, 2e-5,        2e-5,         2e-5
+    set Densities             =        3333,        3333,        3100,         3100,3200
 
-    set Viscosities = 1e21,1e21,1.59e21,1e21
+    set Viscosities = 1e21,1e21,1.59e21,1e21,1.59e21
 
 
   end
@@ -164,9 +163,9 @@ end
 subsection Initial composition model
   set Model name = function
   subsection Function
-    set Variable names      = x,z
+    set Variable names      = x,y,z
 
-    set Function expression =  if(z<1167.e3 && z>=1155.e3, 1, 0);if(z<1155.e3 && z>=1035.e3,1, 0) || if(z>950e3 && z <= 1050e3,if(x>500e3 && x < 600e3,1,0),0); if(z>=0 && z <1035.e3, 1, 0)
+    set Function expression =  if(z<1167.e3 && z>=1155.e3, 1, 0);if(z<1155.e3 && z>=1035.e3,1, 0); if(z>=0 && z <1035.e3, 1, 0);if(z>930e3 && z <= 1030e3,if(x>550e3 && x < 650e3,if(y>550e3 && y < 650e3,1,0),0),0)
 
 end
 end
@@ -180,9 +179,9 @@ end
 # We also have to specify that we want to use the Boussinesq
 # approximation (assuming the density in the temperature
 # equation to be constant, and incompressibility).
-subsection Formulation
-  set Formulation = Boussinesq approximation
-end
+# subsection Formulation
+#   set Formulation = Boussinesq approximation
+# end
 
 
 # The settings above all pertain to the description of the
@@ -192,7 +191,7 @@ end
 # on. We here use a globally refined mesh without
 # adaptive mesh refinement.
 subsection Mesh refinement
-  set Initial global refinement                = 4
+  set Initial global refinement                = 2
   set Initial adaptive refinement              = 0
   set Time steps between mesh refinement       = 0
 end
@@ -209,15 +208,14 @@ end
 # our start time (zero) and final time (0.5) this means that
 # we will obtain 50 output files.
 subsection Postprocess
-  set List of postprocessors = velocity statistics, heat flux statistics, visualization
+  set List of postprocessors = velocity statistics, visualization
 
   subsection Visualization
     set Time between graphical output = 0.01
   end
 end
 
-subsection Solver parameters
-  set Temperature solver tolerance = 1e-10
-end
+
+
 
 
